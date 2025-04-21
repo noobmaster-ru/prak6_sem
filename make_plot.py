@@ -3,43 +3,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D  # подключение 3D-инструментов
 
-# # Загружаем данные
-# data = np.loadtxt("output.csv", delimiter=",")
-
-# # Настройки
-# points_per_curve = 100
-# num_curves = len(data) // points_per_curve
-
-# # Создаём 3D-график
-# fig = plt.figure(figsize=(10, 7))
-# ax = fig.add_subplot(111, projection='3d')
-
-# # Для каждой кривой рисуем линию
-# for i in range(num_curves):
-#     segment = data[i * points_per_curve : (i + 1) * points_per_curve]
-#     t = segment[:, 0]
-#     y1 = segment[:, 1]
-#     y2 = segment[:, 2]
-    
-#     ax.plot3D(t, y1, y2, label=f'Кривая {i+1}')  # линия в 3D
-
-# # Подписи осей
-# ax.set_xlabel("t")
-# ax.set_ylabel("y1")
-# ax.set_zlabel("y2")
-# ax.set_title("3D-график: t, y1, y2")
-# plt.legend()
-# plt.tight_layout()
-# plt.show()
-# print(plt.style.available)
-
-
 # Чтение данных
 df = pd.read_csv("data.csv")
 
 # Инициализация 3D-графика
 fig = plt.figure(figsize=(10, 7))
 ax = fig.add_subplot(111, projection='3d')
+
+
 
 # Вытаскиваем начальную и конечную точки
 start = df.iloc[0]
