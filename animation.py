@@ -3,12 +3,13 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.animation import FuncAnimation
 import numpy as np
+from constants import T0,TN,N0,EPS,STEP
 
 # Чтение данных
 df = pd.read_csv("data.csv")
 
 # Инициализация графика
-fig = plt.figure(figsize=(10, 7))
+fig = plt.figure(figsize=(13, 7))
 ax = fig.add_subplot(111, projection='3d')
 
 # Установка пределов по осям
@@ -47,6 +48,22 @@ def update(frame):
 # Анимация
 ani = FuncAnimation(fig, update, frames=len(df), init_func=init,
                     interval=5, blit=True)
+
+# Добавим текст с константами в правый верхний угол графика
+_step = (TN-T0)/N0
+textstr = '\n'.join((
+    r'$T_0=%.1f$' % T0,
+    r'$T_N=%.1f$' % TN,
+    r'$N=%d$' % N0,
+    r'$\varepsilon=%.2f$' % EPS,
+    r'$Step=%.4f$' % _step
+))
+
+# Параметры для рамки текста
+props = dict(boxstyle='round', facecolor='white', alpha=0.8)
+
+# Добавим текст на 2D-плоскость (не 3D)
+plt.gcf().text(0.9, 0.85, textstr, fontsize=12, bbox=props)
 
 # Показываем график
 plt.legend()
