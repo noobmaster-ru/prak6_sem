@@ -15,28 +15,19 @@ typedef std::pair<double, State> TimeStatePair;
 typedef std::vector<TimeStatePair> TimeSeries;
 
 State compute_begining_values(State& vector_y_star){
-    double y1_0 = vector_y_star.y1 + EPS;
-    double y2_0 = vector_y_star.y2 + EPS;
-    double y3_0 = vector_y_star.y3 + EPS;
-
     State vector_y_0;
-    vector_y_0.y1 = y1_0;
-    vector_y_0.y2 = y2_0;
-    vector_y_0.y3 = y3_0;
+    vector_y_0.y1 = vector_y_star.y1 + EPS;
+    vector_y_0.y2 = vector_y_star.y2 + EPS;
+    vector_y_0.y3 = vector_y_star.y3 + EPS;
     return vector_y_0;
 }
 
 State compute_stationary_solutions(double D,double M){
-    State y;
-
-    double y2_star = sqrt(D*M + sqrt(D*D*M*M -4*M*M*M + 3*M*M));
-    double y1_star = -M/y2_star;
-    double y3_star = D/2 + M/(y2_star*y2_star)*(1-M);
-
-    y.y1 = y1_star;
-    y.y2 = y2_star;
-    y.y3 = y3_star;
-    return y;
+    State y_star;
+    y_star.y2 = sqrt(D*M + sqrt(D*D*M*M -4*M*M*M + 3*M*M));
+    y_star.y1 = -M/y_star.y2;
+    y_star.y3 = D/2 + M/(y_star.y2*y_star.y2)*(1-M);
+    return y_star;
 }
 
 // Правая часть системы
@@ -56,7 +47,6 @@ TimeSeries runge_kutta_4_system(double D,double M){
     double t = T0;
     State y = vector_y_0;
     TimeSeries results;
-    // std::cout << "OK" << std::endl;
     while (t <= TN) {
         results.push_back({t, y});
 
@@ -74,42 +64,36 @@ TimeSeries runge_kutta_4_system(double D,double M){
     return results;
 }
 
-void writeToCSV(const TimeSeries& data, const std::string& filename) {
-    // Открываем файл для записи
-    std::ofstream outFile(filename);
-    
-    if (!outFile.is_open()) {
-        std::cerr << "Ошибка при открытии файла!" << std::endl;
-        return;
-    }
-
-    // Записываем заголовок CSV
-    outFile << "Time,y1,y2,y3\n";
-
+void writeToCSV(const TimeSeries& data, std::ofstream& file) {
     // Проходим по всем данным в TimeSeries и записываем их в файл
     for (const auto& pair : data) {
         double time = pair.first;
         const State& state = pair.second;
         
         // Записываем время и значения состояний в CSV формате
-        outFile << time << "," << state.y1 << "," << state.y2 << "," << state.y3 << "\n";
+        file << time << "," << state.y1 << "," << state.y2 << "," << state.y3 << "\n";
     }
-
-    // Закрываем файл
-    outFile.close();
 }
 
 
 int main(){
-    double D,M;
-    for (double D = 0.0; D < TN; D = D + STEP){
-        for (double M = 0.0; M < TN;M = M + STEP){
-            TimeSeries vector_y = runge_kutta_4_system(D,M);
-            
-            // Записываем данные в файл "output.csv"
-            writeToCSV(vector_y, "data.csv");
-        }
-    }
+    // Открываем файл для записи
+    std::ofstream file("data.csv");
+    if (!file.is_open()) {
+        std::cerr << "Ошибка при открытии файла!" << std::endl;
+        return 1;
+    }    
+    // Записываем заголовок CSV
+    file << "Time,y1,y2,y3\n";
+
+    double D=1.75,M=1.0;
+    TimeSeries vector_y = runge_kutta_4_system(D,M);
+    
+    // Записываем данные в файл "output.csv"
+    writeToCSV(vector_y, file);
+
     std::cout << "Данные успешно записаны в файл output.csv" << std::endl;
+    // Закрываем файл
+    file.close();
     return 0;
 }
