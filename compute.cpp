@@ -107,7 +107,7 @@ int main(){
             TimeSeries vector_y = runge_kutta_4_system(D,M);
             
             // Записываем данные в файл "output.csv"
-            writeToCSV(vector_y, "output.csv");
+            writeToCSV(vector_y, "data.csv");
         }
     }
     std::cout << "Данные успешно записаны в файл output.csv" << std::endl;
