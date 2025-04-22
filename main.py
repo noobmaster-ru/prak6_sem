@@ -3,10 +3,10 @@ import subprocess
 constants = {
     "T0": 0.0,
     "TN": 1.0,
-    "N0": 100,
+    "N0": 1000,
     "EPS": 0.01,
     "STEP": "(TN-T0)/N0",
-    "D": 1.0,
+    "D": 100.6,
     "M": 1.0,
     "NUM_TRAJECTORY": 1
 }
