@@ -2,15 +2,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D  # подключение 3D-инструментов
-
-from constants import T0,TN,N0,EPS,STEP
+import time
+from constants import T0,TN,N0,EPS,STEP,D,M,NUM_TRAJECTORY
 # Чтение данных
 df = pd.read_csv("data.csv")
 
 # Инициализация 3D-графика
 fig = plt.figure(figsize=(14, 7.5))
 ax = fig.add_subplot(111, projection='3d')
-
 
 
 # Вытаскиваем начальную и конечную точки
@@ -66,19 +65,22 @@ ax.legend(unique_labels.values(), unique_labels.keys())
 # Добавим текст с константами в правый верхний угол графика
 _step = (TN-T0)/N0
 textstr = '\n'.join((
+    r'$D=%.2f$' % D,
+    r'$M=%.2f$' % M,
     r'$T_0=%.1f$' % T0,
     r'$T_N=%.1f$' % TN,
     r'$N=%d$' % N0,
     r'$\varepsilon=%.2f$' % EPS,
-    r'$Step=%.2f$' % _step
+    r'$Step=%.3f$' % _step,
+    r'$NUM\_TRAJECTORY=%d$' % NUM_TRAJECTORY
 ))
 
 # Параметры для рамки текста
 props = dict(boxstyle='round', facecolor='white', alpha=0.8)
 
 # Добавим текст на 2D-плоскость (не 3D)
-plt.gcf().text(0.9, 0.85, textstr, fontsize=12, bbox=props)
-
+plt.gcf().text(0.85, 0.75, textstr, fontsize=12, bbox=props)
+plt.savefig(f"pig_{time.time()}.jpg")
 # Показ графика
 plt.tight_layout()
 plt.show()

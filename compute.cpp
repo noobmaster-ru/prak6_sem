@@ -22,7 +22,7 @@ State compute_begining_values(State& vector_y_star){
     return vector_y_0;
 }
 
-State compute_stationary_solutions(double D,double M){
+State compute_stationary_solutions(){
     State y_star;
     y_star.y2 = sqrt(D*M + sqrt(D*D*M*M -4*M*M*M + 3*M*M));
     y_star.y1 = -M/y_star.y2;
@@ -31,7 +31,7 @@ State compute_stationary_solutions(double D,double M){
 }
 
 // Правая часть системы
-State func(double t, State y,double D, double M) {
+State func(double t, State y) {
     State dy;
 
     dy.y1 = y.y1 - (D / 2.0) * y.y2 + y.y2 * (y.y3 + y.y1 * y.y1);
@@ -41,19 +41,19 @@ State func(double t, State y,double D, double M) {
     return dy;
 }
 
-TimeSeries runge_kutta_4_system(double D,double M){
-    State vector_y_star = compute_stationary_solutions(D,M);
+TimeSeries runge_kutta_4_system(){
+    State vector_y_star = compute_stationary_solutions();
     State vector_y_0 = compute_begining_values(vector_y_star);
     double t = T0;
     State y = vector_y_0;
     TimeSeries results;
-    while (t <= TN) {
+    while (t <= TN + STEP) {
         results.push_back({t, y});
 
-        State k1 = func(t, y, D, M);
-        State k2 = func(t + STEP/2, { y.y1 + STEP/2 * k1.y1, y.y2 + STEP/2 * k1.y2, y.y3 + STEP/2 * k1.y3 }, D, M);
-        State k3 = func(t + STEP/2, { y.y1 + STEP/2 * k2.y1, y.y2 + STEP/2 * k2.y2, y.y3 + STEP/2 * k2.y3 }, D, M);
-        State k4 = func(t + STEP,   { y.y1 + STEP * k3.y1,  y.y2 + STEP * k3.y2,  y.y3 + STEP * k3.y3  }, D, M);
+        State k1 = func(t, y);
+        State k2 = func(t + STEP/2, { y.y1 + STEP/2 * k1.y1, y.y2 + STEP/2 * k1.y2, y.y3 + STEP/2 * k1.y3 });
+        State k3 = func(t + STEP/2, { y.y1 + STEP/2 * k2.y1, y.y2 + STEP/2 * k2.y2, y.y3 + STEP/2 * k2.y3 });
+        State k4 = func(t + STEP,   { y.y1 + STEP * k3.y1,  y.y2 + STEP * k3.y2,  y.y3 + STEP * k3.y3  });
 
         y.y1 += STEP/6 * (k1.y1 + 2*k2.y1 + 2*k3.y1 + k4.y1);
         y.y2 += STEP/6 * (k1.y2 + 2*k2.y2 + 2*k3.y2 + k4.y2);
@@ -86,8 +86,7 @@ int main(){
     // Записываем заголовок CSV
     file << "Time,y1,y2,y3\n";
 
-    double D=1.75,M=1.0;
-    TimeSeries vector_y = runge_kutta_4_system(D,M);
+    TimeSeries vector_y = runge_kutta_4_system();
     
     // Записываем данные в файл "output.csv"
     writeToCSV(vector_y, file);
