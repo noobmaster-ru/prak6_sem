@@ -71,7 +71,7 @@ if __name__ == "__main__":
     df = pd.read_csv("data.csv")
 
     # Инициализация 3D-графика
-    fig = plt.figure(figsize=(14, 8))
+    fig = plt.figure(figsize=(15, 7.5))
     gs = gridspec.GridSpec(3, 2, width_ratios=[2, 1])  # 3 строки, 2 столбца
 
     ax = fig.add_subplot(gs[:, 0], projection='3d')
@@ -99,7 +99,7 @@ if __name__ == "__main__":
     props = dict(boxstyle='round', facecolor='white', alpha=0.5) # alpha - прозрачность
 
     # Добавим текст на 2D-плоскость (не 3D)
-    plt.gcf().text(0.01, 0.8, textstr, fontsize=11, bbox=props)
+    plt.gcf().text(0.01, 0.79, textstr, fontsize=11, bbox=props)
     plt.savefig(f"pictures/pig_{time.time()}.jpg")
     # Показ графика
     plt.tight_layout()
