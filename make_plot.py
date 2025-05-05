@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D  # connect 3D-tools
 import time
-from constants import T0,TN,N0,EPS,D,M,FILENAME
+from constants import T0,TN,N0,EPS,D,M,FILENAME,sign_1,sign_2
 import matplotlib.gridspec as gridspec
 
 
@@ -13,8 +13,8 @@ def make_3d_plot(df):
     end = df.iloc[-1]
 
     # Drow the start and end points
-    ax.scatter([start["Time"]],[start["y1"]], [start["y2"]], [start["y3"]], color="green", s=10, label="Begin point", zorder=5)
-    ax.scatter([end["Time"]],[end["y1"]], [end["y2"]], [end["y3"]], color="red", s=10, label="End point", zorder=5)
+    ax.scatter([start["Time"]],[start["y1"]], [start["y2"]], [start["y3"]], color="green", s=15, label="Begin point", zorder=5)
+    ax.scatter([end["Time"]],[end["y1"]], [end["y2"]], [end["y3"]], color="red", s=15, label="End point", zorder=5)
 
 
     #  --- Projections start point ---
@@ -43,9 +43,9 @@ def make_3d_plot(df):
     # Make trajectory for y1, y2, y3
     ax.plot(df["Time"],df["y1"], df["y2"], df["y3"], label="Trajectory", color="blue",linewidth=1.5)
 
-    ax.set_xlabel("Y1", labelpad=25, fontsize=14,fontweight='bold')
-    ax.set_ylabel("Y2", labelpad=25, fontsize=14,fontweight='bold')
-    ax.set_zlabel("Y3", labelpad=25, fontsize=14,fontweight='bold')
+    ax.set_xlabel("Y1", labelpad=10, fontsize=13,fontweight='bold')
+    ax.set_ylabel("Y2", labelpad=10, fontsize=13,fontweight='bold')
+    ax.set_zlabel("Y3", labelpad=10, fontsize=13,fontweight='bold')
     ax.set_title("Plot of solution", fontsize=20)
 
     # Add legend and grid
@@ -61,15 +61,15 @@ def make_3d_plot(df):
 def make_2d_plot(df, column_name, position):
     ax2 = fig.add_subplot(position)
     ax2.plot(df["Time"], df[column_name], color='blue')
-    ax2.set_xlabel("Time")
-    ax2.set_ylabel(column_name.upper())
+    ax2.set_xlabel("Time",fontsize=13,fontweight='bold')
+    ax2.set_ylabel(column_name.upper(),rotation=0, labelpad=13,fontsize=13,fontweight='bold')
     ax2.grid(True)
 
 
 if __name__ == "__main__":
     # Read dataframe
-    print("Open datas/data0.csv")
-    df = pd.read_csv("datas/data0.csv")
+    print("Open data.csv")
+    df = pd.read_csv("data.csv")
 
     # Init 3D-plot
     fig = plt.figure(figsize=(15, 7.5))
@@ -84,6 +84,9 @@ if __name__ == "__main__":
 
 
     #  Add text with constants to the left upper corner
+    formula_str = (
+        rf'$y_2^* = {"" if sign_1 == 1 else "-"}\sqrt{{DM {"+ " if sign_2 == 1 else "- "} \sqrt{{D^2 M^2 - 4M^3 + 3M^2}}}}$'
+    )
     _step = (TN-T0)/N0
     textstr = '\n'.join((
         r'$D=%.2f$' % D,
@@ -91,13 +94,14 @@ if __name__ == "__main__":
         r'$T_0=%.1f$' % T0,
         r'$T_N=%.1f$' % TN,
         r'$N=%d$' % N0,
-        r'$\varepsilon=%.3f$' % EPS,
-        r'$Step=%.3f$' % _step
+        r'$\varepsilon=%.1f$' % EPS,
+        r'$Step=%.1f$' % _step,
+        formula_str
     ))
     props = dict(boxstyle='round', facecolor='white', alpha=0.5) 
 
-
-    plt.gcf().text(0.01, 0.79, textstr, fontsize=11, bbox=props)
+    plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.1, hspace=0.4)
+    plt.gcf().text(0.01, 0.75, textstr, fontsize=11, bbox=props)
     plt.savefig(f"pictures/pig_{time.time()}.jpg")
     # Show plot
     plt.tight_layout()

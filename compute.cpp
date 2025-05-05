@@ -24,7 +24,7 @@ State compute_begining_values(State& vector_y_star){
 
 State compute_stationary_solutions(){
     State y_star;
-    y_star.y2 = sqrt(D*M + sqrt(D*D*M*M - 4*M*M*M + 3*M*M));
+    y_star.y2 = sign_1*sqrt(D*M + sign_2*sqrt(D*D*M*M - 4*M*M*M + 3*M*M));
     y_star.y1 = -M/y_star.y2;
     y_star.y3 = D/2 + M/(y_star.y2*y_star.y2)*(1-M);
     return y_star;
