@@ -1,55 +1,55 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from mpl_toolkits.mplot3d import Axes3D  # подключение 3D-инструментов
+from mpl_toolkits.mplot3d import Axes3D  # connect 3D-tools
 import time
-from constants import T0,TN,N0,EPS,STEP,D,M,NUM_TRAJECTORY
+from constants import T0,TN,N0,EPS,D,M,FILENAME,sign_1,sign_2
 import matplotlib.gridspec as gridspec
 
 
 def make_3d_plot(df):
-    # Вытаскиваем начальную и конечную точки
+    # Starting and ending points
     start = df.iloc[0]
     end = df.iloc[-1]
 
-    #  Точки начала и конца
-    ax.scatter([start["Time"]],[start["y1"]], [start["y2"]], [start["y3"]], color="green", s=10, label="Начальная точка", zorder=5)
-    ax.scatter([end["Time"]],[end["y1"]], [end["y2"]], [end["y3"]], color="red", s=10, label="Конечная точка", zorder=5)
+    # Drow the start and end points
+    ax.scatter([start["Time"]],[start["y1"]], [start["y2"]], [start["y3"]], color="green", s=15, label="Begin point", zorder=5)
+    ax.scatter([end["Time"]],[end["y1"]], [end["y2"]], [end["y3"]], color="red", s=15, label="End point", zorder=5)
 
 
-    # # --- Проекции начальной точки ---
-    # # на плоскость y2-y3
+    #  --- Projections start point ---
+    # for y2-y3
     ax.plot([start["Time"],end["Time"]],[start["y1"], start["y1"]], [start["y2"], start["y2"]], [end["y3"], start["y3"]], color='green', linestyle='dashed')
     ax.scatter([end["Time"]],[start["y1"]], [start["y2"]], [start["y3"]], color="green", s=5, zorder=5)
-    # на плоскость y1-y2
+    # for y1-y2
     ax.plot([start["Time"],start["Time"]],[start["y1"], start["y1"]], [start["y2"], end["y2"]], [start["y3"], start["y3"]], color='green', linestyle='dashed')
     ax.scatter([start["Time"]],[start["y1"]], [end["y2"]], [start["y3"]], color="green", s=5, zorder=5)
-    # # на плоскость y1-y3
+    # for y1-y3
     ax.plot([start["Time"],start["Time"]],[end["y1"], start["y1"]], [start["y2"], start["y2"]], [start["y3"], start["y3"]], color='green', linestyle='dashed')
     ax.scatter([start["Time"]],[end["y1"]], [start["y2"]], [start["y3"]], color="green", s=5, zorder=5)
 
-    # --- Проекции конечной точки ---
-    # # на плоскость y2-y3
+    # --- Projections end point ---
+    # for  y2-y3
     ax.plot([end["Time"],start["Time"]],[end["y1"], end["y1"]], [end["y2"], end["y2"]], [start["y3"], end["y3"]], color='red', linestyle='dashed')
     ax.scatter([start["Time"]],[end["y1"]], [end["y2"]], [end["y3"]], color="red", s=5, zorder=5)
-    # на плоскость y1-y2
+    # for y1-y2
     ax.plot([end["Time"],end["Time"]],[end["y1"], end["y1"]], [end["y2"], start["y2"]], [end["y3"], end["y3"]], color='red', linestyle='dashed')
     ax.scatter([end["Time"]],[end["y1"]], [start["y2"]], [end["y3"]], color="red", s=5, zorder=5)
-    # # на плоскость y1-y3
+    # for y1-y3
     ax.plot([end["Time"],end["Time"]],[start["y1"], end["y1"]], [end["y2"], end["y2"]], [end["y3"], end["y3"]], color='red', linestyle='dashed')
     ax.scatter([end["Time"]],[start["y1"]], [end["y2"]], [end["y3"]], color="red", s=5, zorder=5)
 
 
-    # Построение траектории в пространстве y1, y2, y3
-    ax.plot(df["Time"],df["y1"], df["y2"], df["y3"], label="Траектория", color="blue",linewidth=1.5)
+    # Make trajectory for y1, y2, y3
+    ax.plot(df["Time"],df["y1"], df["y2"], df["y3"], label="Trajectory", color="blue",linewidth=1.5)
 
-    ax.set_xlabel("Y1", labelpad=25, fontsize=14,fontweight='bold')
-    ax.set_ylabel("Y2", labelpad=25, fontsize=14,fontweight='bold')
-    ax.set_zlabel("Y3", labelpad=25, fontsize=14,fontweight='bold')
-    ax.set_title("График решения системы", fontsize=20)
+    ax.set_xlabel("Y1", labelpad=10, fontsize=13,fontweight='bold')
+    ax.set_ylabel("Y2", labelpad=10, fontsize=13,fontweight='bold')
+    ax.set_zlabel("Y3", labelpad=10, fontsize=13,fontweight='bold')
+    ax.set_title("Plot of solution", fontsize=20)
 
-    # Добавление легенды и сетки
-    ax.legend(loc='best')  # ax1 — это твой 3D-график    
+    # Add legend and grid
+    ax.legend(loc='best')  
     ax.view_init(elev=40, azim=140)
     ax.grid(True)
 
@@ -61,18 +61,19 @@ def make_3d_plot(df):
 def make_2d_plot(df, column_name, position):
     ax2 = fig.add_subplot(position)
     ax2.plot(df["Time"], df[column_name], color='blue')
-    ax2.set_xlabel("Time")
-    ax2.set_ylabel(column_name.upper())
+    ax2.set_xlabel("Time",fontsize=13,fontweight='bold')
+    ax2.set_ylabel(column_name.upper(),rotation=0, labelpad=13,fontsize=13,fontweight='bold')
     ax2.grid(True)
 
 
 if __name__ == "__main__":
-    # Чтение данных
+    # Read dataframe
+    print("Open data.csv")
     df = pd.read_csv("data.csv")
 
-    # Инициализация 3D-графика
+    # Init 3D-plot
     fig = plt.figure(figsize=(15, 7.5))
-    gs = gridspec.GridSpec(3, 2, width_ratios=[2, 1])  # 3 строки, 2 столбца
+    gs = gridspec.GridSpec(3, 2, width_ratios=[2, 1]) # 3 rows ,2 columns
 
     ax = fig.add_subplot(gs[:, 0], projection='3d')
 
@@ -82,7 +83,10 @@ if __name__ == "__main__":
     make_2d_plot(df, "y3", gs[2, 1])
 
 
-    # Добавим текст с константами в правый верхний угол графика
+    #  Add text with constants to the left upper corner
+    formula_str = (
+        rf'$y_2^* = {"" if sign_1 == 1 else "-"}\sqrt{{DM {"+ " if sign_2 == 1 else "- "} \sqrt{{D^2 M^2 - 4M^3 + 3M^2}}}}$'
+    )
     _step = (TN-T0)/N0
     textstr = '\n'.join((
         r'$D=%.2f$' % D,
@@ -90,17 +94,15 @@ if __name__ == "__main__":
         r'$T_0=%.1f$' % T0,
         r'$T_N=%.1f$' % TN,
         r'$N=%d$' % N0,
-        r'$\varepsilon=%.3f$' % EPS,
-        r'$Step=%.3f$' % _step,
-        r'$NUM\_TRAJECTORY=%d$' % NUM_TRAJECTORY
+        r'$\varepsilon=%.1f$' % EPS,
+        r'$Step=%.1f$' % _step,
+        formula_str
     ))
+    props = dict(boxstyle='round', facecolor='white', alpha=0.5) 
 
-    # Параметры для рамки текста
-    props = dict(boxstyle='round', facecolor='white', alpha=0.5) # alpha - прозрачность
-
-    # Добавим текст на 2D-плоскость (не 3D)
-    plt.gcf().text(0.01, 0.79, textstr, fontsize=11, bbox=props)
+    plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.1, hspace=0.4)
+    plt.gcf().text(0.01, 0.75, textstr, fontsize=11, bbox=props)
     plt.savefig(f"pictures/pig_{time.time()}.jpg")
-    # Показ графика
+    # Show plot
     plt.tight_layout()
     plt.show()

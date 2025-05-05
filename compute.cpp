@@ -24,13 +24,13 @@ State compute_begining_values(State& vector_y_star){
 
 State compute_stationary_solutions(){
     State y_star;
-    y_star.y2 = sqrt(D*M + sqrt(D*D*M*M -4*M*M*M + 3*M*M));
+    y_star.y2 = sign_1*sqrt(D*M + sign_2*sqrt(D*D*M*M - 4*M*M*M + 3*M*M));
     y_star.y1 = -M/y_star.y2;
     y_star.y3 = D/2 + M/(y_star.y2*y_star.y2)*(1-M);
     return y_star;
 }
 
-// Правая часть системы
+// Right side of the system
 State func(double t, State y) {
     State dy;
 
@@ -65,34 +65,27 @@ TimeSeries runge_kutta_4_system(){
 }
 
 void writeToCSV(const TimeSeries& data, std::ofstream& file) {
-    // Проходим по всем данным в TimeSeries и записываем их в файл
     for (const auto& pair : data) {
         double time = pair.first;
         const State& state = pair.second;
-        
-        // Записываем время и значения состояний в CSV формате
         file << time << "," << state.y1 << "," << state.y2 << "," << state.y3 << "\n";
     }
 }
 
 
 int main(){
-    // Открываем файл для записи
-    std::ofstream file("data.csv");
+    std::ofstream file(FILENAME);
     if (!file.is_open()) {
-        std::cerr << "Ошибка при открытии файла!" << std::endl;
+        std::cerr << "Error with opening file!" << std::endl;
         return 1;
     }    
-    // Записываем заголовок CSV
     file << "Time,y1,y2,y3\n";
 
     TimeSeries vector_y = runge_kutta_4_system();
     
-    // Записываем данные в файл "output.csv"
     writeToCSV(vector_y, file);
 
-    std::cout << "Данные успешно записаны в файл output.csv" << std::endl;
-    // Закрываем файл
+    std::cout << "Data succesfully write to " << FILENAME << std::endl;
     file.close();
     return 0;
 }
